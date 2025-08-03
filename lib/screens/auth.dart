@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,7 @@ class _AuthState extends State<Auth> {
 
   var _isLogin = true;
 
+  var _enteredUsername = "";
   var _enteredEmail = "";
   var _enteredPassword = "";
 
@@ -29,11 +31,21 @@ class _AuthState extends State<Auth> {
       _form.currentState!.save();
 
       if (_isLogin) {
-      } else {
-        await _firebaseAuth.createUserWithEmailAndPassword(
+        await _firebaseAuth.signInWithEmailAndPassword(
           email: _enteredEmail,
           password: _enteredPassword,
         );
+      } else {
+        final userCredential = await _firebaseAuth
+            .createUserWithEmailAndPassword(
+              email: _enteredEmail,
+              password: _enteredPassword,
+            );
+
+        FirebaseFirestore.instance
+            .collection("users")
+            .doc(userCredential.user!.uid)
+            .set({"username": _enteredUsername, "email": _enteredEmail});
       }
     }
   }
@@ -67,6 +79,24 @@ class _AuthState extends State<Auth> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          TextFormField(
+                            decoration: InputDecoration(labelText: "Username"),
+                            enableSuggestions: false,
+                            autocorrect: false,
+                            textCapitalization: TextCapitalization.none,
+                            validator: (value) {
+                              if (value == null ||
+                                  value.trim().isEmpty ||
+                                  value.trim().length < 4) {
+                                return "Username must be at least 4 characters long";
+                              }
+
+                              return null;
+                            },
+                            onSaved: (newValue) {
+                              _enteredUsername = newValue!;
+                            },
+                          ),
                           TextFormField(
                             decoration: InputDecoration(labelText: "Email"),
                             enableSuggestions: false,
