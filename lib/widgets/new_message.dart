@@ -20,7 +20,8 @@ class _NewMessageState extends State<NewMessage> {
 
   void _submitMessage() async {
     final String enteredMessage = _controller.text;
-
+    _controller.clear();
+    FocusScope.of(context).unfocus();
     if (enteredMessage.trim().isEmpty) {
       return;
     }

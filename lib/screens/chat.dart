@@ -1,3 +1,4 @@
+import 'package:chat_app_flutter/widgets/chat_messages.dart';
 import 'package:chat_app_flutter/widgets/new_message.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -19,11 +20,13 @@ class Chat extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Expanded(child: ChatMessages()),
-          NewMessage(),
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(child: ChatMessages()),
+            NewMessage(),
+          ],
+        ),
       ),
     );
   }
